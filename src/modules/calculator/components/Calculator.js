@@ -23,7 +23,7 @@ const controlsWrapperCss = theme => ({
   display: `grid`,
   paddingBottom: theme.space[5],
   marginBottom: theme.space[5],
-  justifyContent: `space-around`,
+  justifyContent: `space-between`,
   gridTemplateAreas: `
     'source pages'
     'disclaimer disclaimer'
@@ -146,6 +146,7 @@ const Calculator = ({
           css={theme => ({
             ...controlPositionerCss(theme),
             gridArea: "pages",
+            justifyContent: `flex-end`,
           })}
         >
           <PageCountSelectControl
