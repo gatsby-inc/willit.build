@@ -18,7 +18,7 @@ const BuildCardsGroup = () => {
           id
           contentSource
           siteType
-          latest(numberOfPages: 512) {
+          latest(numberOfPages: 8192) {
             coldStart {
               timeInMs
               timeInMinutes
@@ -44,7 +44,7 @@ const BuildCardsGroup = () => {
 
   return (
     <div
-      css={theme => ({
+      css={(theme) => ({
         marginTop: theme.space[8],
         display: `grid`,
         marginLeft: `-${HORIZONTAL_PADDING_MOBILE}`,
@@ -79,7 +79,7 @@ const BuildCardsGroup = () => {
             key={id}
             contentSource={contentSource}
             siteType={siteType}
-            numberOfPages={512}
+            numberOfPages={8192}
             contentChangeBuild={dataUpdate[0]}
             codeChangeBuild={warmStart[0]}
           />
