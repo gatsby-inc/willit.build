@@ -3,8 +3,6 @@ import formatDuration from "../utils/formatDuration"
 import { DetailsChartDimensions } from "../constants"
 
 const { ActiveDotRadius } = DetailsChartDimensions
-const SECONDS_IN_MINUTE = 60
-const MINUTES_IN_HOUR = 60
 
 export function filteredDataInitialStartIndex({
   data,
@@ -55,8 +53,8 @@ export function yAxisTickFormater(value) {
     .join(" ")
 }
 
-export function getYAxisTicks(data) {
-  const maxValue = data.reduce((result, row) => {
+function getMaxValue(data) {
+  return data.reduce((result, row) => {
     const maxItemValue = Object.keys(row).reduce((rowResult, key) => {
       return typeof row[key] === "number" && row[key] > rowResult
         ? row[key]
@@ -65,56 +63,72 @@ export function getYAxisTicks(data) {
 
     return maxItemValue > result ? maxItemValue : result
   }, 0)
+}
 
-  const maxTickInMinutes = Math.ceil(maxValue / SECONDS_IN_MINUTE)
-  let maxTickInHours
-  let maxTickInSeconds
+function getRoundedMaxValue(maxValue) {
+  const SECONDS_IN_MINUTE = 60
+  const MINUTES_IN_HOUR = 60
+  const MIN_ROUNDING = 10
 
-  if (maxTickInMinutes >= MINUTES_IN_HOUR) {
-    maxTickInHours = Math.ceil(maxTickInMinutes / MINUTES_IN_HOUR)
-    maxTickInSeconds = maxTickInHours * MINUTES_IN_HOUR * SECONDS_IN_MINUTE
+  if (maxValue < SECONDS_IN_MINUTE) {
+    return {
+      roundedMaxValue: Math.ceil(maxValue / MIN_ROUNDING) * MIN_ROUNDING,
+      multiplier: 1,
+    }
+  } else if (maxValue < SECONDS_IN_MINUTE * MINUTES_IN_HOUR) {
+    return {
+      roundedMaxValue: Math.ceil(maxValue / SECONDS_IN_MINUTE),
+      multiplier: SECONDS_IN_MINUTE,
+    }
   } else {
-    maxTickInSeconds = maxTickInMinutes * SECONDS_IN_MINUTE
+    return {
+      roundedMaxValue: Math.ceil(
+        maxValue / (SECONDS_IN_MINUTE * MINUTES_IN_HOUR)
+      ),
+      multiplier: SECONDS_IN_MINUTE * MINUTES_IN_HOUR,
+    }
   }
+}
 
-  const maxTipNumberValue = maxTickInHours ? maxTickInHours : maxTickInMinutes
-  const multiplier = maxTickInHours
-    ? MINUTES_IN_HOUR * SECONDS_IN_MINUTE
-    : SECONDS_IN_MINUTE
+export function getYAxisTicks(data) {
+  const maxValue = getMaxValue(data)
+  const { roundedMaxValue, multiplier } = getRoundedMaxValue(maxValue)
+  const maxTick = roundedMaxValue * multiplier
 
   // depending on max tick value we render different amount of ticks,
   // the goal is that we render ticks with integer value in one unit
   // for example 15s, 45s, 1m, 3m, 45m, 1h, 3h,
   // but never 1m 35s, or 1h 25m
   // this way wy maintain proper spacing between yAxis label and its ticks' labels
-  if (maxTipNumberValue === 1) {
+
+  if (roundedMaxValue === 1) {
     const secondTick = 0.25 * multiplier
     const thirdTick = 0.5 * multiplier
     const fourthTick = 0.75 * multiplier
 
-    return [0, secondTick, thirdTick, fourthTick, maxTickInSeconds]
-  } else if (maxTipNumberValue === 2) {
+    return [0, secondTick, thirdTick, fourthTick, maxTick]
+  } else if (roundedMaxValue === 2) {
     const secondTick = 1 * multiplier
 
-    return [0, secondTick, maxTickInSeconds]
-  } else if (maxTipNumberValue === 3) {
+    return [0, secondTick, maxTick]
+  } else if (roundedMaxValue === 3) {
     const secondTick = 1 * multiplier
     const thirdTick = 2 * multiplier
 
-    return [0, secondTick, thirdTick, maxTickInSeconds]
-  } else if (maxTipNumberValue % 2 !== 0) {
-    const secondTick = Math.floor(maxTipNumberValue * 0.2) * multiplier
-    const thirdTick = Math.floor(maxTipNumberValue * 0.4) * multiplier
-    const fourthTick = Math.floor(maxTipNumberValue * 0.6) * multiplier
-    const fifthTick = Math.floor(maxTipNumberValue * 0.8) * multiplier
+    return [0, secondTick, thirdTick, maxTick]
+  } else if (roundedMaxValue % 2 !== 0) {
+    const secondTick = Math.floor(roundedMaxValue * 0.2) * multiplier
+    const thirdTick = Math.floor(roundedMaxValue * 0.4) * multiplier
+    const fourthTick = Math.floor(roundedMaxValue * 0.6) * multiplier
+    const fifthTick = Math.floor(roundedMaxValue * 0.8) * multiplier
 
-    return [0, secondTick, thirdTick, fourthTick, fifthTick, maxTickInSeconds]
+    return [0, secondTick, thirdTick, fourthTick, fifthTick, maxTick]
   } else {
-    const secondTick = Math.floor(maxTipNumberValue * 0.25) * multiplier
-    const thirdTick = Math.floor(maxTipNumberValue * 0.5) * multiplier
-    const fourthTick = Math.ceil(maxTipNumberValue * 0.75) * multiplier
+    const secondTick = Math.floor(roundedMaxValue * 0.25) * multiplier
+    const thirdTick = Math.floor(roundedMaxValue * 0.5) * multiplier
+    const fourthTick = Math.ceil(roundedMaxValue * 0.75) * multiplier
 
-    return [0, secondTick, thirdTick, fourthTick, maxTickInSeconds]
+    return [0, secondTick, thirdTick, fourthTick, maxTick]
   }
 }
 
