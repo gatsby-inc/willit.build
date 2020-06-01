@@ -1,6 +1,6 @@
 import format from "date-fns/format"
 
-export function formatDataForChart({ benchmarks }) {
+export function formatDataForChart({ benchmarks, chartActiveLines }) {
   const graphDataByCreatedAt = {}
 
   benchmarks.forEach(({ createdAt, buildType, buildTimes }) => {
@@ -17,7 +17,7 @@ export function formatDataForChart({ benchmarks }) {
       }
     }
 
-    if (timeInMs) {
+    if (timeInMs && chartActiveLines[buildType]) {
       graphDataByCreatedAt[formatedCreatedAt][buildType] = Math.floor(
         timeInMs / 1000
       )
@@ -34,5 +34,5 @@ export function formatDataForChart({ benchmarks }) {
     (a, b) => new Date(b.createdAt) + new Date(a.createdAt)
   )
 
-  return { graphData }
+  return graphData
 }

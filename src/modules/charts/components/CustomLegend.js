@@ -5,7 +5,7 @@ import { ToggleCheckbox } from "gatsby-interface"
 import LinePreview from "./LinePreview"
 import { useTheme } from "@modules/ui/components/ThemeProvider"
 
-function CustomLegend({ onClick, activeLines }) {
+function CustomLegend({ onClick, chartActiveLines }) {
   const { LegendMinHeight, YAxisWidth, VerticalGap } = DetailsChartDimensions
   const { tones } = useTheme()
 
@@ -25,8 +25,8 @@ function CustomLegend({ onClick, activeLines }) {
         },
       })}
     >
-      {Object.keys(activeLines).map(key => {
-        const isActive = activeLines[key]
+      {Object.keys(chartActiveLines).map(key => {
+        const isActive = chartActiveLines[key]
         const displayedAs = BuildType[key].displayedAs
 
         /*

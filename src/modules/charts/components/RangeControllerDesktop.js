@@ -24,7 +24,6 @@ const {
 
 function RangeControllerDesktop({
   data,
-  activeLines,
   yAxisTicks,
   isMobile,
   filteredDataStartIndex,
@@ -73,7 +72,6 @@ function RangeControllerDesktop({
               stroke={tones[key].medium}
               fillOpacity={1}
               fill={`url(#${key}-fill)`}
-              style={{ display: !activeLines[key] ? `none` : undefined }}
               isAnimationActive={false}
             />
           ))}

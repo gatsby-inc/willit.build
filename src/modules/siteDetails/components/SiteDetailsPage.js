@@ -23,6 +23,12 @@ const { YAxisWidth, ChartWithControlsHeight } = DetailsChartDimensions
 const SiteDetailsPage = ({ data, pageContext }) => {
   const [chartIsMounted, setChartIsMounted] = React.useState(false)
   const { activeBenchmarks } = pageContext
+  const [graphData, setGraphData] = React.useState()
+  const [chartActiveLines, setChartActiveLines] = React.useState({
+    DATA_UPDATE: true,
+    WARM_START: true,
+    COLD_START: true,
+  })
 
   React.useEffect(() => {
     setChartIsMounted(true)
@@ -52,12 +58,21 @@ const SiteDetailsPage = ({ data, pageContext }) => {
 
   const isArtificiallySlow = !!ArtificiallySlowContentSources[contentSource]
 
-  const { graphData } = formatDataForChart({
-    benchmarks,
-    pageCount,
-  })
+  React.useEffect(() => {
+    const graphData = formatDataForChart({
+      benchmarks,
+      pageCount,
+      chartActiveLines,
+    })
+
+    setGraphData(graphData)
+  }, [benchmarks, pageCount, chartActiveLines])
 
   const { displayedAs: contentSourceTitle } = ContentSource[contentSource]
+
+  if (!graphData) {
+    return null
+  }
 
   return (
     <MaxWidthWrapper
@@ -127,6 +142,8 @@ const SiteDetailsPage = ({ data, pageContext }) => {
           data={graphData}
           annotations={graphAnnotations}
           setChartIsMounted={setChartIsMounted}
+          chartActiveLines={chartActiveLines}
+          setChartActiveLines={setChartActiveLines}
         />
       </section>
 

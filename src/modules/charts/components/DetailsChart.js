@@ -36,11 +36,12 @@ function DetailsChart({
   initialDataRangeMobile = ChartDefaultProps.InitialDataScopeMobile,
   annotations = [],
   setChartIsMounted,
+  chartActiveLines,
+  setChartActiveLines,
   ...rest
 }) {
   const { mediaQueries } = useTheme()
   const isMobile = !useMatchMedia(mediaQueries.desktop)
-
   const [filteredData, setFilteredData] = React.useState()
   const [filteredDataStartIndex, setFilteredDataStartIndex] = React.useState(
     filteredDataInitialStartIndex({
@@ -58,6 +59,7 @@ function DetailsChart({
     isMobile,
     filteredDataStartIndex,
     filteredDataEndIndex,
+    data,
   ])
 
   function filterDataCallback() {
@@ -72,12 +74,6 @@ function DetailsChart({
     )
   }
 
-  const [activeLines, setActiveLines] = React.useState({
-    COLD_START: true,
-    DATA_UPDATE: true,
-    WARM_START: true,
-  })
-
   const yAxisTicks = getYAxisTicks(data)
 
   if (!filteredData) {
@@ -85,7 +81,10 @@ function DetailsChart({
   }
 
   const toggleChartLine = dataKey => {
-    setActiveLines({ ...activeLines, [dataKey]: !activeLines[dataKey] })
+    setChartActiveLines({
+      ...chartActiveLines,
+      [dataKey]: !chartActiveLines[dataKey],
+    })
   }
 
   const updateDataRange = ({ startIndex, endIndex }) => {
@@ -116,7 +115,6 @@ function DetailsChart({
             isMobile={isMobile}
             yAxisTicks={yAxisTicks}
             annotations={annotations}
-            activeLines={activeLines}
             onFinishLoad={setChartIsMounted}
           />
         </div>
@@ -132,7 +130,6 @@ function DetailsChart({
           <LazyRangeControllerDesktop
             data={data}
             isMobile={isMobile}
-            activeLines={activeLines}
             filteredDataStartIndex={filteredDataStartIndex}
             filteredDataEndIndex={filteredDataEndIndex}
             updateDataRange={updateDataRange}
@@ -140,7 +137,10 @@ function DetailsChart({
           />
         </div>
       )}
-      <CustomLegend activeLines={activeLines} onClick={toggleChartLine} />
+      <CustomLegend
+        chartActiveLines={chartActiveLines}
+        onClick={toggleChartLine}
+      />
     </div>
   )
 }

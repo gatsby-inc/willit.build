@@ -56,7 +56,6 @@ export function yAxisTickFormater(value) {
 }
 
 export function getYAxisTicks(data) {
-  //  console.log({ data })
   const maxValue = data.reduce((result, row) => {
     const maxItemValue = Object.keys(row).reduce((rowResult, key) => {
       return typeof row[key] === "number" && row[key] > rowResult

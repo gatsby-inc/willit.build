@@ -32,7 +32,6 @@ function Chart({
   isMobile,
   yAxisTicks,
   annotations,
-  activeLines,
   onFinishLoad,
 }) {
   const { colors, tones } = useTheme()
@@ -132,14 +131,8 @@ function Chart({
               stroke={tones[key].medium}
               fillOpacity={1}
               fill={`url(#${key}-fill)`}
-              dot={<CustomDot belongsToActiveLine={!!activeLines[key]} />}
-              activeDot={
-                <CustomDot
-                  active={true}
-                  belongsToActiveLine={!!activeLines[key]}
-                />
-              }
-              style={{ display: !activeLines[key] ? `none` : undefined }}
+              dot={<CustomDot />}
+              activeDot={<CustomDot active={true} />}
               animationDuration={isRendered ? 0 : 1000}
               strokeDasharray={strokeDasharray}
               className={`main-chart-area`}

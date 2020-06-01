@@ -3,7 +3,7 @@ import { useTheme } from "@modules/ui/components/ThemeProvider"
 import { DetailsChartDimensions } from "../constants"
 
 function CustomDot(prop) {
-  const { cx, cy, dataKey, active = false, belongsToActiveLine } = prop
+  const { cx, cy, dataKey, active = false } = prop
 
   if (!cx || !cy) {
     return null
@@ -23,7 +23,6 @@ function CustomDot(prop) {
       width={ActiveDotDiam}
       height={ActiveDotDiam}
       viewBox={`0 0 ${ActiveDotDiam} ${ActiveDotDiam}`}
-      css={{ display: !belongsToActiveLine ? `none` : undefined }}
     >
       {active && (
         <circle
